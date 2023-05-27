@@ -11,7 +11,6 @@ export 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
 /// testMode — включение работы капчи в режиме тестирования. Пользователь всегда будет получать задание. Используйте это свойство только для отладки и тестирования.
 /// isWebView — запуск капчи в WebView. Используется для повышения точности оценки пользователей при добавлении капчи в мобильные приложения с помощью WebView.
 /// invisible — невидимая капча.
-/// shieldPosition — расположение блока с уведомлением об обработке данных.
 /// hideShield — скрыть блок с уведомлением об обработке данных.
 /// colorBackground — цвет фона
 
@@ -22,7 +21,6 @@ class CaptchaConfig {
   bool invisible;
   bool hideShield;
   bool isWebView;
-  String shieldPosition;
   Color? colorBackground;
 
   CaptchaConfig(
@@ -32,27 +30,52 @@ class CaptchaConfig {
       this.invisible = false,
       this.hideShield = false,
       this.isWebView = true,
-      this.shieldPosition = 'bottom-right',
       this.colorBackground});
+}
+
+class Controller {
+  InAppWebViewController? _inAppWebViewController;
+  VoidCallback? _readyCallback;
+
+  Future destroy() async {
+    return _inAppWebViewController?.evaluateJavascript(source: "window.smartCaptcha.destroy()");
+  }
+
+  Future execute() async {
+    return _inAppWebViewController?.evaluateJavascript(source: "window.smartCaptcha.execute()");
+  }
+
+  void _setController(InAppWebViewController controller) {
+    _inAppWebViewController = controller;
+    _readyCallback?.call();
+  }
+
+  bool isControllerIsReady() => _inAppWebViewController != null ? true : false;
+
+  onReadyCallback(VoidCallback readyCallback) {
+    _readyCallback = readyCallback;
+  }
+
 }
 
 class YandexSmartCaptcha extends StatefulWidget {
   final CaptchaConfig captchaConfig;
+  final Controller? controller;
   final VoidCallback? challengeViewOpenCallback;
   final VoidCallback? challengeViewCloseCallback;
   final VoidCallback? networkErrorCallback;
   final Function(String) tokenResultCallback;
   final bool Function(Uri uriPolicy)? shouldOpenPolicy;
 
-  const YandexSmartCaptcha(
-      {required this.captchaConfig,
+  const YandexSmartCaptcha({
+      required this.captchaConfig,
+      this.controller,
       required this.tokenResultCallback,
       this.challengeViewCloseCallback,
       this.challengeViewOpenCallback,
       this.networkErrorCallback,
       this.shouldOpenPolicy,
-      Key? key})
-      : super(key: key);
+      Key? key}) : super(key: key);
 
   @override
   State<YandexSmartCaptcha> createState() => _YandexSmartCaptchaState();
@@ -60,7 +83,8 @@ class YandexSmartCaptcha extends StatefulWidget {
 
 class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
   late final WebPageCaptchaContent _webPageCaptchaContent;
-  late InAppWebViewController webViewController;
+  // late InAppWebViewController webViewController;
+  Controller? _controller;
 
   final InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
@@ -78,6 +102,7 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
   @override
   void initState() {
     super.initState();
+    _controller = widget.controller;
     final CaptchaConfig captchaConfig = widget.captchaConfig;
     _webPageCaptchaContent = WebPageCaptchaContent(
         siteKey: captchaConfig.siteKey,
@@ -85,8 +110,8 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
         languageCaptcha: captchaConfig.languageCaptcha,
         invisible: captchaConfig.invisible,
         hideShield: captchaConfig.hideShield,
-        isWebView: captchaConfig.isWebView,
-        shieldPosition: captchaConfig.shieldPosition);
+        isWebView: captchaConfig.isWebView
+    );
   }
 
   @override
@@ -113,8 +138,7 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
           debugPrint('consoleMessage:${consoleMessage.toString()}');
         },
         onWebViewCreated: (InAppWebViewController controller) {
-          webViewController = controller;
-
+          _controller?._setController(controller);
           controller.addJavaScriptHandler(
               handlerName: 'tokenHandler',
               callback: (args) {

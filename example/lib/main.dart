@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
 
-
 // Get you key from admin panel yandex cloud
 String siteKey = const String.fromEnvironment('SITE_KEY');
 
@@ -36,14 +35,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final CaptchaConfig captchaConfig;
+  final Controller _controller = Controller();
 
   @override
   void initState() {
+    super.initState();
     captchaConfig = CaptchaConfig(
       siteKey: siteKey,
-      testMode: false,
+      testMode: true,
+      languageCaptcha: 'ru',
+      invisible: false,
+      isWebView: true,
+      colorBackground: Colors.cyan
     );
-    super.initState();
+    _controller.onReadyCallback(() {
+      debugPrint('SmartCaptcha controller is ready');
+    });
   }
 
   @override
@@ -54,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Expanded(
               child: YandexSmartCaptcha(
             captchaConfig: captchaConfig,
+            controller: _controller,
             challengeViewCloseCallback: () {
               debugPrint('call: challengeViewCloseCallback');
             },
@@ -70,6 +78,30 @@ class _MyHomePageState extends State<MyHomePage> {
               return true;
             },
           )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    onPressed: () async {
+                      final bool isReady = _controller.isControllerIsReady();
+                      if (isReady) {
+                        _controller.execute();
+                      }
+                    },
+                    child: const Text('Execute ')),
+                ElevatedButton(
+                    onPressed: () async {
+                      final bool isReady = _controller.isControllerIsReady();
+                      if (isReady) {
+                        _controller.destroy();
+                      }
+                    },
+                    child: const Text('Destroy'))
+              ],
+            ),
+          )
         ],
       ),
     );

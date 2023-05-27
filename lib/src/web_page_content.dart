@@ -7,7 +7,6 @@ final class WebPageCaptchaContent {
   final bool _invisible;
   final bool _hideShield;
   final bool _isWebView;
-  final String _shieldPosition;
 
   late String yandexSmartCaptchaWebContent;
 
@@ -17,9 +16,8 @@ final class WebPageCaptchaContent {
     String languageCaptcha = 'ru',
     bool invisible = false,
     bool hideShield = false,
-    bool isWebView = true,
-    shieldPosition = 'bottom-right'
-  }) : _isWebView = isWebView, _shieldPosition = shieldPosition, _hideShield = hideShield, _invisible = invisible, _languageCaptcha = languageCaptcha, _testMode = testMode, _siteKey = siteKey {
+    bool isWebView = true
+  }) : _isWebView = isWebView, _hideShield = hideShield, _invisible = invisible, _languageCaptcha = languageCaptcha, _testMode = testMode, _siteKey = siteKey {
 
     yandexSmartCaptchaWebContent = '''
             <!doctype html>
@@ -41,7 +39,6 @@ final class WebPageCaptchaContent {
                           hl: '$_languageCaptcha',
                           test: $_testMode,
                           webview: $_isWebView,
-                          shieldPosition: $_shieldPosition,
                           callback: resultCallback
                       });
               
