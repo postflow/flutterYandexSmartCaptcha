@@ -7,7 +7,6 @@ import 'package:flutter_yandex_smartcaptcha/src/web_page_content.dart';
 export 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
 
 /// sitekey — ключ клиентской части.
-///
 /// languageCaptcha — язык виджета. 'ru' | 'en' | 'be' | 'kk' | 'tt' | 'uk' | 'uz' | 'tr';
 /// testMode — включение работы капчи в режиме тестирования. Пользователь всегда будет получать задание. Используйте это свойство только для отладки и тестирования.
 /// isWebView — запуск капчи в WebView. Используется для повышения точности оценки пользователей при добавлении капчи в мобильные приложения с помощью WebView.
