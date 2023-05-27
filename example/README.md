@@ -1,16 +1,87 @@
-# example
+# Flutter Yandex SmartCaptcha
 
-A new Flutter project.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+## Example:
 
-A few resources to get you started if this is your first Flutter project:
+```Dart
+import 'package:flutter/material.dart';
+import 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+// Get you key from admin panel yandex cloud
+String siteKey = const String.fromEnvironment('SITE_KEY');
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Yandex SmartCaptcha',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Example'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late final CaptchaConfig captchaConfig;
+
+  @override
+  void initState() {
+    captchaConfig = CaptchaConfig(
+      siteKey: siteKey,
+      testMode: false,
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+              child: YandexSmartCaptcha(
+            captchaConfig: captchaConfig,
+            challengeViewCloseCallback: () {
+              debugPrint('call: challengeViewCloseCallback');
+            },
+            challengeViewOpenCallback: () {
+              debugPrint('call: challengeViewOpenCallback');
+            },
+            networkErrorCallback: () {
+              debugPrint('call: networkErrorCallback');
+            },
+            tokenResultCallback: (String token) {
+              debugPrint('call: tokenResultCallback $token');
+            },
+            shouldOpenPolicy: (Uri uriPolicy) {
+              return true;
+            },
+          )),
+        ],
+      ),
+    );
+  }
+}
+
+
+```

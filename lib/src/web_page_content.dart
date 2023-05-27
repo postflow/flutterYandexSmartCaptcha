@@ -7,16 +7,19 @@ final class WebPageCaptchaContent {
   bool _invisible;
   bool _hideShield;
   bool _isWebView;
+  String _shieldPosition;
 
   late String yandexSmartCaptchaWebContent;
 
-  WebPageCaptchaContent({required String siteKey,
+  WebPageCaptchaContent({
+    required String siteKey,
     bool testMode = false,
-    String languageCaptcha = 'ru', //'ru' | 'en' | 'be' | 'kk' | 'tt' | 'uk' | 'uz' | 'tr';
+    String languageCaptcha = 'ru',
     bool invisible = false,
     bool hideShield = false,
-    bool isWebView = true
-  }) : _isWebView = isWebView, _hideShield = hideShield, _invisible = invisible, _languageCaptcha = languageCaptcha, _testMode = testMode, _siteKey = siteKey {
+    bool isWebView = true,
+    shieldPosition = 'bottom-right'
+  }) : _isWebView = isWebView, _shieldPosition = shieldPosition, _hideShield = hideShield, _invisible = invisible, _languageCaptcha = languageCaptcha, _testMode = testMode, _siteKey = siteKey {
 
     yandexSmartCaptchaWebContent = '''
             <!doctype html>
@@ -38,7 +41,8 @@ final class WebPageCaptchaContent {
                           hl: '$_languageCaptcha',
                           test: $_testMode,
                           webview: $_isWebView,
-                          // callback: resultCallback
+                          shieldPosition: $_shieldPosition,
+                          callback: resultCallback
                       });
               
                       window.smartCaptcha.subscribe(
@@ -53,25 +57,24 @@ final class WebPageCaptchaContent {
                           () => { window.flutter_inappwebview.callHandler('challengeHiddenEvent'); }
                       );
                       
-                      
-                      
+                  
                        window.smartCaptcha.subscribe(
                           widgetId,
                           'network-error',
                           () => { window.flutter_inappwebview.callHandler('networkErrorEvent'); }
                       );
                       
-                       window.smartCaptcha.subscribe(
-                          widgetId,
-                          'success',
-                          (token) => { window.flutter_inappwebview.callHandler('tokenHandler'); }
-                      );
+                      //  window.smartCaptcha.subscribe(
+                      //     widgetId,
+                      //     'success',
+                      //     (token) => { window.flutter_inappwebview.callHandler('tokenHandler'); }
+                      // );
                   }
               }
               
-              // function resultCallback(token) {
-              //     window.flutter_inappwebview.callHandler('tokenHandler');
-              // }
+              function resultCallback(token) {
+                  window.flutter_inappwebview.callHandler('tokenHandler');
+              }
               
             </script>
                 <div id="captcha-container" style="height: 100px"></div>
