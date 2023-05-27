@@ -1,6 +1,6 @@
 name: flutter_yandex_smartcaptcha
 description: Flutter Yandex SmartCaptcha
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/postflow/flutterYandexSmartCaptcha
 
 platforms:
