@@ -1,7 +1,7 @@
 name: flutter_yandex_smartcaptcha
-description: Yandex SmartCaptcha
+description: Flutter Yandex SmartCaptcha
 version: 0.0.1
-homepage:
+homepage: https://github.com/postflow/flutterYandexSmartCaptcha
 
 environment:
   sdk: '>=3.0.1 <4.0.0'

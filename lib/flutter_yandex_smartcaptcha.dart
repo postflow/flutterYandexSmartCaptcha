@@ -5,6 +5,9 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_yandex_smartcaptcha/src/web_page_content.dart';
 
 
+export 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
+
+
 class CaptchaConfig {
   String siteKey;
   bool testMode;
