@@ -1,39 +1,85 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# Flutter Yandex SmartCaptcha
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+## Example:
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+```Dart
+import 'package:flutter/material.dart';
+import 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
 
-## Features
+// Get you key from admin panel yandex cloud
+String siteKey = const String.fromEnvironment('SITE_KEY');
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+void main() {
+  runApp(const MyApp());
+}
 
-## Getting started
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Yandex SmartCaptcha',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Example'),
+    );
+  }
+}
 
-## Usage
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+  final String title;
 
-```dart
-const like = 'sample';
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  late final CaptchaConfig captchaConfig;
+
+  @override
+  void initState() {
+    captchaConfig = CaptchaConfig(
+      siteKey: siteKey,
+      testMode: false,
+    );
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Expanded(
+              child: YandexSmartCaptcha(
+            captchaConfig: captchaConfig,
+            challengeViewCloseCallback: () {
+              debugPrint('call: challengeViewCloseCallback');
+            },
+            challengeViewOpenCallback: () {
+              debugPrint('call: challengeViewOpenCallback');
+            },
+            networkErrorCallback: () {
+              debugPrint('call: networkErrorCallback');
+            },
+            tokenResultCallback: (String token) {
+              debugPrint('call: tokenResultCallback $token');
+            },
+            shouldOpenPolicy: (Uri uriPolicy) {
+              return true;
+            },
+          )),
+        ],
+      ),
+    );
+  }
+}
+
+
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
