@@ -12,7 +12,7 @@ final class WebPageCaptchaContent {
 
   WebPageCaptchaContent({required String siteKey,
     bool testMode = false,
-    String languageCaptcha = 'ru',
+    String languageCaptcha = 'ru', //'ru' | 'en' | 'be' | 'kk' | 'tt' | 'uk' | 'uz' | 'tr';
     bool invisible = false,
     bool hideShield = false,
     bool isWebView = true
@@ -29,37 +29,52 @@ final class WebPageCaptchaContent {
             </head>
             <body>
             <script>
-            function onLoadFunction() {
-                if (window.smartCaptcha) {
-                   const widgetId =  window.smartCaptcha.render('captcha-container', {
-                    sitekey: '$_siteKey',
-                    invisible: $_invisible, 
-                    hideShield: $_hideShield,
-                    hl: '$_languageCaptcha',
-                    test: $_testMode,
-                    webview: $_isWebView,
-                    callback: resultCallback});
+              function onLoadFunction() {
+                  if (window.smartCaptcha) {
+                      const widgetId = window.smartCaptcha.render('captcha-container', {
+                          sitekey: '$_siteKey',
+                          invisible: $_invisible,
+                          hideShield: $_hideShield,
+                          hl: '$_languageCaptcha',
+                          test: $_testMode,
+                          webview: $_isWebView,
+                          // callback: resultCallback
+                      });
               
-               window.smartCaptcha.subscribe(
-                    widgetId,
-                    'challenge-visible',
-                    () => { window.flutter_inappwebview.callHandler('challengeVisibleEvent');}
-                );
-                  
-                window.smartCaptcha.subscribe(
-                    widgetId,
-                    'challenge-hidden',
-                    () => { window.flutter_inappwebview.callHandler('challengeHiddenEvent');}
-               ); 
-              }
-            }
+                      window.smartCaptcha.subscribe(
+                          widgetId,
+                          'challenge-visible',
+                          () => { window.flutter_inappwebview.callHandler('challengeVisibleEvent'); }
+                      );
               
-              function resultCallback(token) {
-                window.flutter_inappwebview.callHandler('tokenHandler');
+                      window.smartCaptcha.subscribe(
+                          widgetId,
+                          'challenge-hidden',
+                          () => { window.flutter_inappwebview.callHandler('challengeHiddenEvent'); }
+                      );
+                      
+                      
+                      
+                       window.smartCaptcha.subscribe(
+                          widgetId,
+                          'network-error',
+                          () => { window.flutter_inappwebview.callHandler('networkErrorEvent'); }
+                      );
+                      
+                       window.smartCaptcha.subscribe(
+                          widgetId,
+                          'success',
+                          (token) => { window.flutter_inappwebview.callHandler('tokenHandler'); }
+                      );
+                  }
               }
+              
+              // function resultCallback(token) {
+              //     window.flutter_inappwebview.callHandler('tokenHandler');
+              // }
               
             </script>
-                <div id="captcha-container"  style="height: 100px"></div>
+                <div id="captcha-container" style="height: 100px"></div>
             </body>
             </html>
     ''';

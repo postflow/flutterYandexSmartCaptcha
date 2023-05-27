@@ -15,7 +15,7 @@ class CaptchaConfig {
   bool invisible;
   bool hideShield;
   bool isWebView;
-  Color background;
+  Color? colorBackground;
 
   CaptchaConfig({required this.siteKey,
     this.testMode = false,
@@ -23,15 +23,28 @@ class CaptchaConfig {
     this.invisible = false,
     this.hideShield = false,
     this.isWebView = true,
-    this.background = Colors.transparent
+    this.colorBackground
   });
 
 }
 
 class YandexSmartCaptcha extends StatefulWidget {
   final CaptchaConfig captchaConfig;
+  final VoidCallback? challengeViewOpenCallback;
+  final VoidCallback? challengeViewCloseCallback;
+  final VoidCallback? networkErrorCallback;
+  final Function(String) tokenResultCallback;
+  final bool Function(Uri uriPolicy)? shouldOpenPolicy;
 
-  const YandexSmartCaptcha({required this.captchaConfig, Key? key}) : super(key: key);
+  const YandexSmartCaptcha({
+    required this.captchaConfig,
+    required this.tokenResultCallback,
+    this.challengeViewCloseCallback,
+    this.challengeViewOpenCallback,
+    this.networkErrorCallback,
+    this.shouldOpenPolicy,
+    Key? key
+  }) : super(key: key);
 
   @override
   State<YandexSmartCaptcha> createState() => _YandexSmartCaptchaState();
@@ -39,25 +52,9 @@ class YandexSmartCaptcha extends StatefulWidget {
 
 class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
 
-  late final CaptchaConfig _captchaConfig;
+
   late final WebPageCaptchaContent _webPageCaptchaContent;
   late InAppWebViewController webViewController;
-
-
-
-  _YandexSmartCaptchaState(){
-    _captchaConfig = widget.captchaConfig;
-
-    _webPageCaptchaContent = WebPageCaptchaContent(
-        siteKey: widget.captchaConfig.siteKey,
-        testMode: widget.captchaConfig.testMode,
-        languageCaptcha: widget.captchaConfig.languageCaptcha,
-        invisible: widget.captchaConfig.invisible,
-        hideShield: widget.captchaConfig.hideShield,
-        isWebView: widget.captchaConfig.isWebView
-    );
-  }
-
 
 
   final InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
@@ -75,38 +72,66 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
       ));
 
   @override
+  void initState() {
+    super.initState();
+    final CaptchaConfig captchaConfig = widget.captchaConfig;
+    _webPageCaptchaContent = WebPageCaptchaContent(
+        siteKey: captchaConfig.siteKey,
+        testMode: captchaConfig.testMode,
+        languageCaptcha: captchaConfig.languageCaptcha,
+        invisible: captchaConfig.invisible,
+        hideShield: captchaConfig.hideShield,
+        isWebView: captchaConfig.isWebView
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return InAppWebView(
+    return ColoredBox(
+      color: widget.captchaConfig.colorBackground != null ? (widget.captchaConfig.colorBackground ?? Colors.transparent) : Colors.transparent,
+      child: InAppWebView(
+        initialOptions: options,
+        initialData: InAppWebViewInitialData(data: _webPageCaptchaContent.yandexSmartCaptchaWebContent),
+        androidOnPermissionRequest: (controller, origin, resources) async {
+          return PermissionRequestResponse(
+              resources: resources,
+              action: PermissionRequestResponseAction.GRANT);
+        },
+        shouldOverrideUrlLoading: (controller, shouldOverrideUrlLoadingRequest) async{
+          final Uri? url = shouldOverrideUrlLoadingRequest.request.url;
+          if (url != null) {
+            final bool result = widget.shouldOpenPolicy?.call(url) ?? true;
+            return result ? Future.value(NavigationActionPolicy.ALLOW) : Future.value(NavigationActionPolicy.CANCEL);
+          } else {
+            return  Future.value(NavigationActionPolicy.ALLOW);
+          }
+        },
+        onConsoleMessage: (controller, consoleMessage) {
+          print('consoleMessage = ${consoleMessage.toString()}');
+        },
+        onWebViewCreated: (InAppWebViewController controller) {
+          webViewController = controller;
 
-      initialOptions: options,
-      initialData: InAppWebViewInitialData(data: _webPageCaptchaContent.yandexSmartCaptchaWebContent),
-      androidOnPermissionRequest: (controller, origin, resources) async {
-        return PermissionRequestResponse(
-            resources: resources,
-            action: PermissionRequestResponseAction.GRANT);
-      },
 
-      onConsoleMessage: (controller, consoleMessage) {
-        print('consoleMessage = ${consoleMessage.toString()}');
-      },
+          controller.addJavaScriptHandler(handlerName: 'tokenHandler', callback: (args) {
+            print('args: $args');
+            widget.tokenResultCallback.call(' ${args.toString()} ');
+          });
 
+          controller.addJavaScriptHandler(handlerName: 'challengeVisibleEvent', callback: (args) {
+            widget.challengeViewOpenCallback?.call();
+          });
 
-      onWebViewCreated: (InAppWebViewController controller) {
-        webViewController = controller;
-        controller.addJavaScriptHandler(handlerName: 'tokenHandler', callback: (args) {
-          print('args: $args');
-        });
+          controller.addJavaScriptHandler(handlerName: 'challengeHiddenEvent', callback: (args) {
+            widget.challengeViewCloseCallback?.call();
+          });
 
-
-        controller.addJavaScriptHandler(handlerName: 'challengeVisibleEvent', callback: (args){
-          print('challengeVisibleEvent args: $args');
-        });
-
-        controller.addJavaScriptHandler(handlerName: 'challengeHiddenEvent', callback: (args){
-          print('challengeHiddenEvent args: $args');
-        });
-
-      },
+          controller.addJavaScriptHandler(handlerName: 'networkErrorEvent', callback: (args) {
+            print('networkErrorEvent args: $args');
+            widget.networkErrorCallback?.call();
+          });
+        },
+      ),
     );
   }
 }
