@@ -111,7 +111,7 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
           }
         },
         onConsoleMessage: (controller, consoleMessage) {
-          print('consoleMessage = ${consoleMessage.toString()}');
+          debugPrint('consoleMessage:${consoleMessage.toString()}');
         },
         onWebViewCreated: (InAppWebViewController controller) {
           webViewController = controller;
@@ -119,7 +119,6 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
           controller.addJavaScriptHandler(
               handlerName: 'tokenHandler',
               callback: (args) {
-                print('args: $args');
                 widget.tokenResultCallback.call(' ${args.toString()} ');
               });
 

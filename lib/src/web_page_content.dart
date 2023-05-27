@@ -1,13 +1,13 @@
 //https://cloud.yandex.ru/docs/smartcaptcha/concepts/widget-methods#methods
 
 final class WebPageCaptchaContent {
-  String _siteKey;
-  bool _testMode;
-  String _languageCaptcha;
-  bool _invisible;
-  bool _hideShield;
-  bool _isWebView;
-  String _shieldPosition;
+  final String _siteKey;
+  final bool _testMode;
+  final String _languageCaptcha;
+  final bool _invisible;
+  final bool _hideShield;
+  final bool _isWebView;
+  final String _shieldPosition;
 
   late String yandexSmartCaptchaWebContent;
 
