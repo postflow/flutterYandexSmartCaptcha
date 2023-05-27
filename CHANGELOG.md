@@ -4,3 +4,6 @@
 ## 0.0.2
 * Add Controller.
 
+## 0.0.3
+* Update example.
+

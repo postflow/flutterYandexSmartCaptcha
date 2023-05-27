@@ -6,7 +6,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
 
-
 // Get you key from admin panel yandex cloud
 String siteKey = const String.fromEnvironment('SITE_KEY');
 
@@ -41,14 +40,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final CaptchaConfig captchaConfig;
+  final Controller _controller = Controller();
 
   @override
   void initState() {
-    captchaConfig = CaptchaConfig(
-      siteKey: siteKey,
-      testMode: false,
-    );
     super.initState();
+    captchaConfig = CaptchaConfig(
+        siteKey: siteKey,
+        testMode: true,
+        languageCaptcha: 'ru',
+        invisible: false,
+        isWebView: true,
+        colorBackground: Colors.cyan
+    );
+    _controller.onReadyCallback(() {
+      debugPrint('SmartCaptcha controller is ready');
+    });
   }
 
   @override
@@ -58,23 +65,48 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           Expanded(
               child: YandexSmartCaptcha(
-            captchaConfig: captchaConfig,
-            challengeViewCloseCallback: () {
-              debugPrint('call: challengeViewCloseCallback');
-            },
-            challengeViewOpenCallback: () {
-              debugPrint('call: challengeViewOpenCallback');
-            },
-            networkErrorCallback: () {
-              debugPrint('call: networkErrorCallback');
-            },
-            tokenResultCallback: (String token) {
-              debugPrint('call: tokenResultCallback $token');
-            },
-            shouldOpenPolicy: (Uri uriPolicy) {
-              return true;
-            },
-          )),
+                captchaConfig: captchaConfig,
+                controller: _controller,
+                challengeViewCloseCallback: () {
+                  debugPrint('call: challengeViewCloseCallback');
+                },
+                challengeViewOpenCallback: () {
+                  debugPrint('call: challengeViewOpenCallback');
+                },
+                networkErrorCallback: () {
+                  debugPrint('call: networkErrorCallback');
+                },
+                tokenResultCallback: (String token) {
+                  debugPrint('call: tokenResultCallback $token');
+                },
+                shouldOpenPolicy: (Uri uriPolicy) {
+                  return true;
+                },
+              )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                    onPressed: () async {
+                      final bool isReady = _controller.isControllerIsReady();
+                      if (isReady) {
+                        _controller.execute();
+                      }
+                    },
+                    child: const Text('Execute ')),
+                ElevatedButton(
+                    onPressed: () async {
+                      final bool isReady = _controller.isControllerIsReady();
+                      if (isReady) {
+                        _controller.destroy();
+                      }
+                    },
+                    child: const Text('Destroy'))
+              ],
+            ),
+          )
         ],
       ),
     );
