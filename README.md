@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         _controller.execute();
                       }
                     },
-                    child: const Text('Execute ')),
+                    child: const Text('Execute')),
                 ElevatedButton(
                     onPressed: () async {
                       final bool isReady = _controller.isControllerIsReady();

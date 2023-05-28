@@ -56,53 +56,55 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-              child: YandexSmartCaptcha(
-            captchaConfig: captchaConfig,
-            controller: _controller,
-            challengeViewCloseCallback: () {
-              debugPrint('call: challengeViewCloseCallback');
-            },
-            challengeViewOpenCallback: () {
-              debugPrint('call: challengeViewOpenCallback');
-            },
-            networkErrorCallback: () {
-              debugPrint('call: networkErrorCallback');
-            },
-            tokenResultCallback: (String token) {
-              debugPrint('call: tokenResultCallback $token');
-            },
-            shouldOpenPolicy: (Uri uriPolicy) {
-              return true;
-            },
-          )),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                    onPressed: () async {
-                      final bool isReady = _controller.isControllerIsReady();
-                      if (isReady) {
-                        _controller.execute();
-                      }
-                    },
-                    child: const Text('Execute ')),
-                ElevatedButton(
-                    onPressed: () async {
-                      final bool isReady = _controller.isControllerIsReady();
-                      if (isReady) {
-                        _controller.destroy();
-                      }
-                    },
-                    child: const Text('Destroy'))
-              ],
-            ),
-          )
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+                child: YandexSmartCaptcha(
+              captchaConfig: captchaConfig,
+              controller: _controller,
+              challengeViewCloseCallback: () {
+                debugPrint('call: challengeViewCloseCallback');
+              },
+              challengeViewOpenCallback: () {
+                debugPrint('call: challengeViewOpenCallback');
+              },
+              networkErrorCallback: () {
+                debugPrint('call: networkErrorCallback');
+              },
+              tokenResultCallback: (String token) {
+                debugPrint('call: tokenResultCallback $token');
+              },
+              shouldOpenPolicy: (Uri uriPolicy) {
+                return true;
+              },
+            )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                      onPressed: () async {
+                        final bool isReady = _controller.isControllerIsReady();
+                        if (isReady) {
+                          _controller.execute();
+                        }
+                      },
+                      child: const Text('Execute ')),
+                  ElevatedButton(
+                      onPressed: () async {
+                        final bool isReady = _controller.isControllerIsReady();
+                        if (isReady) {
+                          _controller.destroy();
+                        }
+                      },
+                      child: const Text('Destroy'))
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
