@@ -116,5 +116,5 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ```
 
-![image](https://github.com/postflow/flutterYandexSmartCaptcha/blob/master/pic/android.png?raw=true)
-![image](https://github.com/postflow/flutterYandexSmartCaptcha/blob/master/pic/ios.png?raw=true)
+![image](https://github.com/postflow/flutterYandexSmartCaptcha/blob/master/pic/android_small.png?raw=true)
+![image](https://github.com/postflow/flutterYandexSmartCaptcha/blob/master/pic/ios_small.png?raw=true)
