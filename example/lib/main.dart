@@ -24,6 +24,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// CaptchaConfig:
+/// sitekey — ключ клиентской части.
+/// languageCaptcha — язык виджета. 'ru' | 'en' | 'be' | 'kk' | 'tt' | 'uk' | 'uz' | 'tr';
+/// testMode — включение работы капчи в режиме тестирования. Пользователь всегда будет получать задание. Используйте это свойство только для отладки и тестирования.
+/// isWebView — запуск капчи в WebView. Используется для повышения точности оценки пользователей при добавлении капчи в мобильные приложения с помощью WebView.
+/// invisible — невидимая капча.
+/// hideShield — скрыть блок с уведомлением об обработке данных.
+/// colorBackground — цвет фона
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 

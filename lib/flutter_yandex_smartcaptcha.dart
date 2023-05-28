@@ -83,7 +83,7 @@ class YandexSmartCaptcha extends StatefulWidget {
 
 class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
   late final WebPageCaptchaContent _webPageCaptchaContent;
-  // late InAppWebViewController webViewController;
+
   Controller? _controller;
 
   final InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
@@ -142,7 +142,7 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
           controller.addJavaScriptHandler(
               handlerName: 'tokenHandler',
               callback: (args) {
-                widget.tokenResultCallback.call(' ${args.toString()} ');
+                widget.tokenResultCallback.call(args.toString());
               });
 
           controller.addJavaScriptHandler(
