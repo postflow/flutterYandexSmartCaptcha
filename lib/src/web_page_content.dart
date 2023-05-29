@@ -55,7 +55,7 @@ final class WebPageCaptchaContent {
                       );
                       
                   
-                       window.smartCaptcha.subscribe(
+                      window.smartCaptcha.subscribe(
                           widgetId,
                           'network-error',
                           () => { window.flutter_inappwebview.callHandler('networkErrorEvent'); }
@@ -64,13 +64,13 @@ final class WebPageCaptchaContent {
                       //  window.smartCaptcha.subscribe(
                       //     widgetId,
                       //     'success',
-                      //     (token) => { window.flutter_inappwebview.callHandler('tokenHandler'); }
+                      //     (token) => { window.flutter_inappwebview.callHandler('tokenHandler', token); }
                       // );
                   }
               }
               
               function resultCallback(token) {
-                  window.flutter_inappwebview.callHandler('tokenHandler');
+                  window.flutter_inappwebview.callHandler('tokenHandler', token);
               }
               
             </script>

@@ -135,8 +135,9 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
           }
         },
         onConsoleMessage: (controller, consoleMessage) {
-          debugPrint('consoleMessage:${consoleMessage.toString()}');
+          debugPrint('YandexSmartCaptcha js console message:${consoleMessage.toString()}');
         },
+
         onWebViewCreated: (InAppWebViewController controller) {
           _controller?._setController(controller);
           controller.addJavaScriptHandler(

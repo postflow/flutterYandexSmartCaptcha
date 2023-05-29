@@ -29,6 +29,15 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// CaptchaConfig:
+/// sitekey — ключ клиентской части.
+/// languageCaptcha — язык виджета. 'ru' | 'en' | 'be' | 'kk' | 'tt' | 'uk' | 'uz' | 'tr';
+/// testMode — включение работы капчи в режиме тестирования. Пользователь всегда будет получать задание. Используйте это свойство только для отладки и тестирования.
+/// isWebView — запуск капчи в WebView. Используется для повышения точности оценки пользователей при добавлении капчи в мобильные приложения с помощью WebView.
+/// invisible — невидимая капча.
+/// hideShield — скрыть блок с уведомлением об обработке данных.
+/// colorBackground — цвет фона
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -61,59 +70,59 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-              child: YandexSmartCaptcha(
-                captchaConfig: captchaConfig,
-                controller: _controller,
-                challengeViewCloseCallback: () {
-                  debugPrint('call: challengeViewCloseCallback');
-                },
-                challengeViewOpenCallback: () {
-                  debugPrint('call: challengeViewOpenCallback');
-                },
-                networkErrorCallback: () {
-                  debugPrint('call: networkErrorCallback');
-                },
-                tokenResultCallback: (String token) {
-                  debugPrint('call: tokenResultCallback $token');
-                },
-                shouldOpenPolicy: (Uri uriPolicy) {
-                  return true;
-                },
-              )),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                    onPressed: () async {
-                      final bool isReady = _controller.isControllerIsReady();
-                      if (isReady) {
-                        _controller.execute();
-                      }
-                    },
-                    child: const Text('Execute')),
-                ElevatedButton(
-                    onPressed: () async {
-                      final bool isReady = _controller.isControllerIsReady();
-                      if (isReady) {
-                        _controller.destroy();
-                      }
-                    },
-                    child: const Text('Destroy'))
-              ],
-            ),
-          )
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+                child: YandexSmartCaptcha(
+                  captchaConfig: captchaConfig,
+                  controller: _controller,
+                  challengeViewCloseCallback: () {
+                    debugPrint('call: challengeViewCloseCallback');
+                  },
+                  challengeViewOpenCallback: () {
+                    debugPrint('call: challengeViewOpenCallback');
+                  },
+                  networkErrorCallback: () {
+                    debugPrint('call: networkErrorCallback');
+                  },
+                  tokenResultCallback: (String token) {
+                    debugPrint('call: tokenResultCallback $token');
+                  },
+                  shouldOpenPolicy: (Uri uriPolicy) {
+                    return true;
+                  },
+                )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                      onPressed: () async {
+                        final bool isReady = _controller.isControllerIsReady();
+                        if (isReady) {
+                          _controller.execute();
+                        }
+                      },
+                      child: const Text('Execute ')),
+                  ElevatedButton(
+                      onPressed: () async {
+                        final bool isReady = _controller.isControllerIsReady();
+                        if (isReady) {
+                          _controller.destroy();
+                        }
+                      },
+                      child: const Text('Destroy'))
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 }
-
-
 ```
 
 ![image](https://github.com/postflow/flutterYandexSmartCaptcha/blob/master/pic/android_small.png?raw=true)

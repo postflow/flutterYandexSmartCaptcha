@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     captchaConfig = CaptchaConfig(
       siteKey: siteKey,
-      testMode: true,
+      testMode: false,
       languageCaptcha: 'ru',
       invisible: false,
       isWebView: true,
