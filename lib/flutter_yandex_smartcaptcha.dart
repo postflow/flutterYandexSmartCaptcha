@@ -65,7 +65,8 @@ class YandexSmartCaptcha extends StatefulWidget {
   final VoidCallback? challengeViewCloseCallback;
   final VoidCallback? networkErrorCallback;
   final Function(String) tokenResultCallback;
-  final bool Function(Uri uriPolicy)? shouldOpenPolicy;
+  final bool Function(String urlPolicy)? shouldOpenPolicy;
+  final Widget? onLoadedWidget;
 
   const YandexSmartCaptcha({
       required this.captchaConfig,
@@ -75,6 +76,7 @@ class YandexSmartCaptcha extends StatefulWidget {
       this.challengeViewOpenCallback,
       this.networkErrorCallback,
       this.shouldOpenPolicy,
+      this.onLoadedWidget,
       Key? key}) : super(key: key);
 
   @override
@@ -125,19 +127,13 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
           return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
         },
         shouldOverrideUrlLoading: (controller, shouldOverrideUrlLoadingRequest) async {
-          final Uri? url = shouldOverrideUrlLoadingRequest.request.url;
-
-          if (url != null) {
-            final bool result = widget.shouldOpenPolicy?.call(url) ?? true;
-            return result ? Future.value(NavigationActionPolicy.ALLOW) : Future.value(NavigationActionPolicy.CANCEL);
-          } else {
-            return Future.value(NavigationActionPolicy.ALLOW);
-          }
+          final String url = shouldOverrideUrlLoadingRequest.request.url.toString();
+          final bool callbackResult = widget.shouldOpenPolicy?.call(url) ?? true;
+          return callbackResult ? Future.value(NavigationActionPolicy.ALLOW) : Future.value(NavigationActionPolicy.CANCEL);
         },
         onConsoleMessage: (controller, consoleMessage) {
           debugPrint('YandexSmartCaptcha js console message:${consoleMessage.toString()}');
         },
-
         onWebViewCreated: (InAppWebViewController controller) {
           _controller?._setController(controller);
           controller.addJavaScriptHandler(
