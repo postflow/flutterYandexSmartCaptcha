@@ -31,6 +31,8 @@ final class WebPageCaptchaContent {
             <body>
             <script>
               function onLoadFunction() {
+               window.flutter_inappwebview.callHandler('captchaContainerIsLoaded');
+                  
                   if (window.smartCaptcha) {
                       const widgetId = window.smartCaptcha.render('captcha-container', {
                           sitekey: '$_siteKey',

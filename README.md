@@ -56,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     captchaConfig = CaptchaConfig(
         siteKey: siteKey,
-        testMode: true,
+        testMode: false,
         languageCaptcha: 'ru',
         invisible: false,
         isWebView: true,
@@ -76,6 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
                 child: YandexSmartCaptcha(
                   captchaConfig: captchaConfig,
+                  onLoadWidget: const Center(
+                    child: SizedBox.square(
+                        dimension: 60,
+                        child: CircularProgressIndicator()
+                    ),
+                  ),
                   controller: _controller,
                   challengeViewCloseCallback: () {
                     debugPrint('call: challengeViewCloseCallback');
@@ -89,8 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   tokenResultCallback: (String token) {
                     debugPrint('call: tokenResultCallback $token');
                   },
-                  shouldOpenPolicy: (Uri uriPolicy) {
-                    return true;
+                  shouldOpenPolicy: (String urlPolicy) {
+                    if (urlPolicy.contains('smartcaptcha_notice')) {
+                      return false;
+                    } else {
+                      return true;
+                    }
                   },
                 )),
             Padding(
@@ -105,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           _controller.execute();
                         }
                       },
-                      child: const Text('Execute ')),
+                      child: const Text('Execute')),
                   ElevatedButton(
                       onPressed: () async {
                         final bool isReady = _controller.isControllerIsReady();

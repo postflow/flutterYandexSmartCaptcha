@@ -71,9 +71,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
                 child: YandexSmartCaptcha(
               captchaConfig: captchaConfig,
-              onLoadedWidget: const SizedBox.square(
-                  dimension: 60,
-                  child: CircularProgressIndicator()),
+              onLoadWidget: const Center(
+                child: SizedBox.square(
+                    dimension: 60,
+                    child: CircularProgressIndicator()
+                ),
+              ),
               controller: _controller,
               challengeViewCloseCallback: () {
                 debugPrint('call: challengeViewCloseCallback');
