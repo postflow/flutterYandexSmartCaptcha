@@ -2,6 +2,7 @@ library flutter_yandex_smartcaptcha;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_yandex_smartcaptcha/src/onload_placeholder_widget.dart';
 import 'package:flutter_yandex_smartcaptcha/src/web_page_content.dart';
 
 export 'package:flutter_yandex_smartcaptcha/flutter_yandex_smartcaptcha.dart';
@@ -83,7 +84,7 @@ class YandexSmartCaptcha extends StatefulWidget {
   State<YandexSmartCaptcha> createState() => _YandexSmartCaptchaState();
 }
 
-class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
+class _YandexSmartCaptchaState extends State<YandexSmartCaptcha>  {
   late final WebPageCaptchaContent _webPageCaptchaContent;
 
   Controller? _controller;
@@ -119,63 +120,62 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha> {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: widget.captchaConfig.colorBackground != null ? (widget.captchaConfig.colorBackground ?? Colors.transparent) : Colors.transparent,
-      child:  IndexedStack(
-          index: widget.onLoadWidget != null && !_webViewIsCreated ? 0 : 1,
-          children: [
-            if (widget.onLoadWidget != null) ...[widget.onLoadWidget!] else ...[const SizedBox.square()],
-            InAppWebView(
-              initialOptions: options,
-              initialData: InAppWebViewInitialData(data: _webPageCaptchaContent.yandexSmartCaptchaWebContent),
-              androidOnPermissionRequest: (controller, origin, resources) async {
-                return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
-              },
-              shouldOverrideUrlLoading: (controller, shouldOverrideUrlLoadingRequest) async {
-                final String url = shouldOverrideUrlLoadingRequest.request.url.toString();
-                final bool callbackResult = widget.shouldOpenPolicy?.call(url) ?? true;
-                return callbackResult ? Future.value(NavigationActionPolicy.ALLOW) : Future.value(NavigationActionPolicy.CANCEL);
-              },
-              onConsoleMessage: (controller, consoleMessage) {
-                debugPrint('YandexSmartCaptcha js console message:${consoleMessage.toString()}');
-              },
-              onWebViewCreated: (InAppWebViewController controller) {
-                _controller?._setController(controller);
-                controller.addJavaScriptHandler(
-                    handlerName: 'tokenHandler',
-                    callback: (args) {
-                      widget.tokenResultCallback.call(args.toString());
-                    });
+    return Stack(
+        children: [
+          Container(color: widget.captchaConfig.colorBackground != null ? (widget.captchaConfig.colorBackground ?? Colors.transparent) : Colors.transparent),
+          if (widget.onLoadWidget != null) ...[OnLoadPlaceholder(onLoadWidget: widget.onLoadWidget ,webViewIsCreated: _webViewIsCreated)] ,
+          InAppWebView(
+            initialOptions: options,
+            initialData: InAppWebViewInitialData(data: _webPageCaptchaContent.yandexSmartCaptchaWebContent),
+            androidOnPermissionRequest: (controller, origin, resources) async {
+              return PermissionRequestResponse(resources: resources, action: PermissionRequestResponseAction.GRANT);
+            },
+            shouldOverrideUrlLoading: (controller, shouldOverrideUrlLoadingRequest) async {
+              final String url = shouldOverrideUrlLoadingRequest.request.url.toString();
+              final bool callbackResult = widget.shouldOpenPolicy?.call(url) ?? true;
+              return callbackResult ? Future.value(NavigationActionPolicy.ALLOW) : Future.value(NavigationActionPolicy.CANCEL);
+            },
+            onConsoleMessage: (controller, consoleMessage) {
+              debugPrint('YandexSmartCaptcha js console message:${consoleMessage.toString()}');
+            },
+            onWebViewCreated: (InAppWebViewController controller) {
+              _controller?._setController(controller);
+              controller.addJavaScriptHandler(
+                  handlerName: 'tokenHandler',
+                  callback: (args) {
+                    widget.tokenResultCallback.call(args.toString());
+                  });
 
-                controller.addJavaScriptHandler(
-                    handlerName: 'challengeVisibleEvent',
-                    callback: (args) {
-                      widget.challengeViewOpenCallback?.call();
-                    });
+              controller.addJavaScriptHandler(
+                  handlerName: 'challengeVisibleEvent',
+                  callback: (args) {
+                    widget.challengeViewOpenCallback?.call();
+                  });
 
-                controller.addJavaScriptHandler(
-                    handlerName: 'challengeHiddenEvent',
-                    callback: (args) {
-                      widget.challengeViewCloseCallback?.call();
-                    });
+              controller.addJavaScriptHandler(
+                  handlerName: 'challengeHiddenEvent',
+                  callback: (args) {
+                    widget.challengeViewCloseCallback?.call();
+                  });
 
-                controller.addJavaScriptHandler(
-                    handlerName: 'networkErrorEvent',
-                    callback: (args) {
-                      widget.networkErrorCallback?.call();
-                    });
+              controller.addJavaScriptHandler(
+                  handlerName: 'networkErrorEvent',
+                  callback: (args) {
+                    widget.networkErrorCallback?.call();
+                  });
 
-                controller.addJavaScriptHandler(
-                    handlerName: 'captchaContainerIsLoaded',
-                    callback: (args) {
+              controller.addJavaScriptHandler(
+                  handlerName: 'captchaContainerIsLoaded',
+                  callback: (args) {
 
-                      setState(() {
-                        _webViewIsCreated = true;
-                      });
+                    print('captchaContainerIsLoaded');
+
+                    setState(() {
+                      _webViewIsCreated = true;
                     });
-              },
-            )
-          ])
-    );
+                  });
+            },
+          )
+        ]);
   }
 }

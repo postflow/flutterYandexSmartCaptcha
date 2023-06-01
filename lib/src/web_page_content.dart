@@ -31,10 +31,8 @@ final class WebPageCaptchaContent {
             <body>
             <script>
               function onLoadFunction() {
-               window.flutter_inappwebview.callHandler('captchaContainerIsLoaded');
-                  
-                  if (window.smartCaptcha) {
-                      const widgetId = window.smartCaptcha.render('captcha-container', {
+                   if (window.smartCaptcha) {
+                     const widgetId = window.smartCaptcha.render('captcha-container', {
                           sitekey: '$_siteKey',
                           invisible: $_invisible,
                           hideShield: $_hideShield,
@@ -63,11 +61,11 @@ final class WebPageCaptchaContent {
                           () => { window.flutter_inappwebview.callHandler('networkErrorEvent'); }
                       );
                       
-                      //  window.smartCaptcha.subscribe(
-                      //     widgetId,
-                      //     'success',
-                      //     (token) => { window.flutter_inappwebview.callHandler('tokenHandler', token); }
-                      // );
+                       window.flutter_inappwebview.callHandler('captchaContainerIsLoaded');
+                      
+                    
+                  } else {
+                    window.flutter_inappwebview.callHandler('networkErrorEvent');
                   }
               }
               
