@@ -167,9 +167,6 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha>  {
               controller.addJavaScriptHandler(
                   handlerName: 'captchaContainerIsLoaded',
                   callback: (args) {
-
-                    print('captchaContainerIsLoaded');
-
                     setState(() {
                       _webViewIsCreated = true;
                     });

@@ -56,11 +56,11 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     captchaConfig = CaptchaConfig(
         siteKey: siteKey,
-        testMode: false,
+        testMode: true,
         languageCaptcha: 'ru',
         invisible: false,
         isWebView: true,
-        colorBackground: Colors.cyan
+        colorBackground: Colors.green
     );
     _controller.onReadyCallback(() {
       debugPrint('SmartCaptcha controller is ready');
@@ -77,9 +77,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: YandexSmartCaptcha(
                   captchaConfig: captchaConfig,
                   onLoadWidget: const Center(
-                    child: SizedBox.square(
-                        dimension: 60,
-                        child: CircularProgressIndicator()
+                    child: Center(
+                      child: SizedBox(height: 60, width: 60, child: CircularProgressIndicator()),
                     ),
                   ),
                   controller: _controller,
@@ -133,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
 ```
 
 ![image](https://github.com/postflow/flutterYandexSmartCaptcha/blob/master/pic/android_small.png?raw=true)
