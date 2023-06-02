@@ -122,8 +122,8 @@ class _YandexSmartCaptchaState extends State<YandexSmartCaptcha>  {
   Widget build(BuildContext context) {
     return Stack(
         children: [
-          Container(color: widget.captchaConfig.colorBackground != null ? (widget.captchaConfig.colorBackground ?? Colors.transparent) : Colors.transparent),
-          if (widget.onLoadWidget != null) ...[OnLoadPlaceholder(onLoadWidget: widget.onLoadWidget ,webViewIsCreated: _webViewIsCreated)] ,
+          if (widget.captchaConfig.colorBackground != null)  Container(color: widget.captchaConfig.colorBackground),
+          if (widget.onLoadWidget != null) ...[OnLoadPlaceholder(onLoadWidget: widget.onLoadWidget, webViewIsCreated: _webViewIsCreated)] ,
           InAppWebView(
             initialOptions: options,
             initialData: InAppWebViewInitialData(data: _webPageCaptchaContent.yandexSmartCaptchaWebContent),
